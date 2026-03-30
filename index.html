@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>HK Quant Master — 港股量化掃描器</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Helvetica Neue", Arial, "PingFang TC", sans-serif;
+      background: #0d1117;
+      color: #e6edf3;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    header {
+      background: linear-gradient(135deg, #161b22 0%, #1c2333 100%);
+      border-bottom: 1px solid #30363d;
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .header-title { font-size: 1.5rem; font-weight: 700; color: #58a6ff; }
+    .header-sub   { font-size: 0.85rem; color: #8b949e; margin-top: 4px; }
+    .last-updated { font-size: 0.8rem; color: #8b949e; }
+
+    /* ── Market Status Banner ── */
+    .market-banner {
+      margin: 24px 32px 0;
+      padding: 16px 24px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      font-size: 0.95rem;
+    }
+    .market-banner.bull {
+      background: rgba(63, 185, 80, 0.1);
+      border: 1px solid rgba(63, 185, 80, 0.3);
+    }
+    .market-banner.bear {
+      background: rgba(248, 81, 73, 0.1);
+      border: 1px solid rgba(248, 81, 73, 0.3);
+    }
+    .market-badge {
+      font-size: 1.1rem;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+    }
+    .bull .market-badge { background: #3fb950; color: #000; }
+    .bear .market-badge { background: #f85149; color: #fff; }
+    .market-detail { color: #8b949e; font-size: 0.85rem; }
+
+    /* ── Main Container ── */
+    main { padding: 24px 32px 48px; }
+
+    /* ── Section Title ── */
+    .section-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #e6edf3;
+      margin: 32px 0 16px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #21262d;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ── Signal Cards Grid ── */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .card:hover {
+      border-color: #58a6ff;
+      transform: translateY(-2px);
+    }
+
+    /* Card Header */
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+    .card-symbol { font-size: 1.1rem; font-weight: 700; color: #58a6ff; }
+    .card-name   { font-size: 0.85rem; color: #8b949e; margin-top: 2px; }
+    .card-price  { font-size: 1.3rem; font-weight: 700; color: #e6edf3; }
+
+    /* Strategy Badge */
+    .strategy-badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .badge-turtle { background: rgba(88,166,255,0.15); color: #58a6ff; border: 1px solid rgba(88,166,255,0.3); }
+    .badge-rsi    { background: rgba(210,153,34,0.15);  color: #d4a017; border: 1px solid rgba(210,153,34,0.3); }
+
+    /* SL / TP Row */
+    .sl-tp-row {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .sl-box, .tp-box {
+      flex: 1;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+    }
+    .sl-box { background: rgba(248,81,73,0.1);  border: 1px solid rgba(248,81,73,0.25); }
+    .tp-box { background: rgba(63,185,80,0.1);  border: 1px solid rgba(63,185,80,0.25); }
+    .sl-box .label { color: #f85149; font-weight: 600; }
+    .tp-box .label { color: #3fb950; font-weight: 600; }
+    .sl-box .val, .tp-box .val { color: #e6edf3; font-size: 0.95rem; font-weight: 700; }
+
+    /* Fundamentals Grid */
+    .fundamentals {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .fund-item {
+      background: #0d1117;
+      border: 1px solid #21262d;
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 0.8rem;
+    }
+    .fund-label { color: #8b949e; margin-bottom: 2px; }
+    .fund-value { color: #e6edf3; font-weight: 600; font-size: 0.9rem; }
+    .fund-value.good  { color: #3fb950; }
+    .fund-value.warn  { color: #d4a017; }
+    .fund-value.bad   { color: #f85149; }
+
+    /* Momentum */
+    .momentum-row {
+      margin-top: 10px;
+      font-size: 0.8rem;
+      color: #8b949e;
+    }
+    .momentum-row span { color: #e6edf3; }
+
+    /* Date */
+    .card-date {
+      margin-top: 12px;
+      font-size: 0.75rem;
+      color: #484f58;
+    }
+
+    /* ── History Table ── */
+    .table-wrap { overflow-x: auto; margin-top: 8px; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+    }
+    thead tr { background: #161b22; }
+    th {
+      padding: 10px 14px;
+      text-align: left;
+      color: #8b949e;
+      font-weight: 600;
+      border-bottom: 1px solid #21262d;
+      white-space: nowrap;
+    }
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #21262d;
+      vertical-align: middle;
+    }
+    tr:hover td { background: #161b22; }
+
+    .status-active { color: #d4a017; font-weight: 600; }
+    .status-win    { color: #3fb950; font-weight: 600; }
+    .status-loss   { color: #f85149; font-weight: 600; }
+
+    /* ── Empty State ── */
+    .empty-state {
+      text-align: center;
+      padding: 48px;
+      color: #484f58;
+      font-size: 0.95rem;
+    }
+
+    /* ── Footer ── */
+    footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 0.78rem;
+      color: #484f58;
+      border-top: 1px solid #21262d;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      header, main { padding: 16px; }
+      .market-banner { margin: 16px 16px 0; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Header ── -->
+<header>
+  <div>
+    <div class="header-title">📡 HK Quant Master</div>
+    <div class="header-sub">港股量化掃描器 · 技術面 × 基本面</div>
+  </div>
+  <div class="last-updated" id="lastUpdated">載入中…</div>
+</header>
+
+<!-- ── Market Status ── -->
+<div class="market-banner" id="marketBanner">
+  <div class="market-badge" id="marketBadge">—</div>
+  <div>
+    <div id="marketLabel">讀取大盤狀態中…</div>
+    <div class="market-detail" id="marketDetail"></div>
+  </div>
+</div>
+
+<!-- ── Main ── -->
+<main>
+
+  <!-- Today's Signals -->
+  <div class="section-title">🔥 今日訊號</div>
+  <div class="cards-grid" id="signalsGrid">
+    <div class="empty-state">載入中…</div>
+  </div>
+
+  <!-- History Table -->
+  <div class="section-title">📋 歷史追蹤面板</div>
+  <div class="table-wrap">
+    <table id="historyTable">
+      <thead>
+        <tr>
+          <th>觸發日期</th>
+          <th>代號 / 名稱</th>
+          <th>策略</th>
+          <th>進場價</th>
+          <th>止損 SL</th>
+          <th>止盈 TP</th>
+          <th>基本面快照</th>
+          <th>狀態</th>
+        </tr>
+      </thead>
+      <tbody id="historyBody">
+        <tr><td colspan="8" style="text-align:center;color:#484f58;padding:32px">載入中…</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+</main>
+
+<footer>
+  ⚠️ 本工具僅供學習參考，不構成任何投資建議。股票投資存在風險，請自行判斷。
+</footer>
+
+<script>
+// ============================================================
+// 🔧 Helper Functions
+// ============================================================
+const fmt = (v, digits = 2) =>
+  v !== null && v !== undefined ? Number(v).toFixed(digits) : "N/A";
+
+const fmtFund = (label, value, unit = "") => {
+  if (value === null || value === undefined) return { label, display: "N/A", cls: "" };
+  let cls = "";
+  if (label === "股息率") cls = value > 6 ? "good" : value > 3 ? "warn" : "";
+  if (label === "P/E")    cls = value < 15 ? "good" : value < 25 ? "warn" : "bad";
+  if (label === "P/B")    cls = value < 1 ? "good" : value < 2 ? "warn" : "";
+  if (label === "ROE")    cls = value > 15 ? "good" : value > 10 ? "warn" : "bad";
+  return { label, display: `${fmt(value)}${unit}`, cls };
+};
+
+const strategyBadge = (s) =>
+  s.includes("海龜")
+    ? `<span class="strategy-badge badge-turtle">🐢 ${s}</span>`
+    : `<span class="strategy-badge badge-rsi">📉 ${s}</span>`;
+
+const statusHtml = (s) => {
+  if (!s || s === "active") return `<span class="status-active">⏳ 持倉中</span>`;
+  if (s === "win")          return `<span class="status-win">✅ Win 達標</span>`;
+  if (s === "loss")         return `<span class="status-loss">❌ Loss 止損</span>`;
+  return s;
+};
+
+// ============================================================
+// 🃏 Render Signal Card
+// ============================================================
+function renderCard(sig) {
+  const funds = [
+    fmtFund("股息率", sig.div, "%"),
+    fmtFund("P/E",   sig.pe),
+    fmtFund("P/B",   sig.pb),
+    fmtFund("ROE",   sig.roe, "%"),
+  ];
+
+  const fundsHtml = funds.map(f => `
+    <div class="fund-item">
+      <div class="fund-label">${f.label}</div>
+      <div class="fund-value ${f.cls}">${f.display}</div>
+    </div>`).join("");
+
+  return `
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-symbol">${sig.symbol}</div>
+          <div class="card-name">${sig.name}</div>
+        </div>
+        <div class="card-price">$${fmt(sig.price)}</div>
+      </div>
+      ${strategyBadge(sig.strategy)}
+      <div class="sl-tp-row">
+        <div class="sl-box">
+          <div class="label">止損 SL</div>
+          <div class="val">$${fmt(sig.sl)}</div>
+        </div>
+        <div class="tp-box">
+          <div class="label">止盈 TP</div>
+          <div class="val">$${fmt(sig.tp)}</div>
+        </div>
+      </div>
+      <div class="fundamentals">${fundsHtml}</div>
+      <div class="momentum-row">動能：<span>${sig.momentum_label || "N/A"}</span></div>
+      <div class="card-date">📅 觸發日期：${sig.date}</div>
+    </div>`;
+}
+
+// ============================================================
+// 📋 Render History Row
+// ============================================================
+function renderRow(sig) {
+  const fundSnap = [
+    sig.div  != null ? `股息 ${fmt(sig.div)}%` : "",
+    sig.pe   != null ? `P/E ${fmt(sig.pe)}`    : "",
+    sig.pb   != null ? `P/B ${fmt(sig.pb)}`    : "",
+    sig.roe  != null ? `ROE ${fmt(sig.roe)}%`  : "",
+  ].filter(Boolean).join(" | ");
+
+  return `
+    <tr>
+      <td>${sig.date}</td>
+      <td><strong>${sig.symbol}</strong><br><span style="color:#8b949e;font-size:0.8rem">${sig.name}</span></td>
+      <td>${strategyBadge(sig.strategy)}</td>
+      <td><strong>$${fmt(sig.price)}</strong></td>
+      <td style="color:#f85149">$${fmt(sig.sl)}</td>
+      <td style="color:#3fb950">$${fmt(sig.tp)}</td>
+      <td style="color:#8b949e;font-size:0.78rem">${fundSnap || "N/A"}</td>
+      <td>${statusHtml(sig.outcome || sig.status)}</td>
+    </tr>`;
+}
+
+// ============================================================
+// 🚀 Main Load
+// ============================================================
+async function loadData() {
+  try {
+    const res  = await fetch(`data/results.json?t=${Date.now()}`);
+    const data = await res.json();
+
+    // Last updated
+    document.getElementById("lastUpdated").textContent =
+      `🕐 最後更新：${data.last_updated}`;
+
+    // Market banner
+    const isBull = data.market_status === "BULL";
+    const banner = document.getElementById("marketBanner");
+    banner.className = `market-banner ${isBull ? "bull" : "bear"}`;
+    document.getElementById("marketBadge").textContent  = isBull ? "🐂 牛市" : "🐻 熊市";
+    document.getElementById("marketLabel").textContent  =
+      isBull ? "恒生指數站穩 200 日均線之上，系統啟動「海龜突破」順勢策略"
+             : "恒生指數跌破 200 日均線，系統啟動「RSI 超跌抄底」逆勢策略";
+    document.getElementById("marketDetail").textContent =
+      `HSI: ${data.hsi_price}  |  MA200: ${data.hsi_ma200}`;
+
+    // Today's signals
+    const grid    = document.getElementById("signalsGrid");
+    const today   = new Date().toISOString().slice(0, 10);
+    const todaySig = data.signals.filter(s => s.date === today);
+
+    grid.innerHTML = todaySig.length
+      ? todaySig.map(renderCard).join("")
+      : `<div class="empty-state">今日暫無訊號 — 市場靜待機會中 🌙</div>`;
+
+    // History table
+    const tbody = document.getElementById("historyBody");
+    tbody.innerHTML = data.signals.length
+      ? [...data.signals].reverse().map(renderRow).join("")
+      : `<tr><td colspan="8" style="text-align:center;color:#484f58;padding:32px">暫無歷史記錄</td></tr>`;
+
+  } catch (err) {
+    console.error(err);
+    document.getElementById("signalsGrid").innerHTML =
+      `<div class="empty-state">⚠️ 數據載入失敗，請稍後重試</div>`;
+  }
+}
+
+loadData();
+</script>
+</body>
+</html>
