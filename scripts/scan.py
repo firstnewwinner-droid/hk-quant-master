@@ -23,9 +23,11 @@ WATCHLIST = [
 # ── 抓股票數據 ────────────────────────────────────
 def get_stock_data(symbol):
     try:
-        ticker = symbol.replace(".HK", "")
-        ticker_padded = ticker.zfill(4)
-        url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker_padded}.HK?interval=1d&range=1y"
+        if symbol == "^HSI":
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/%5EHSI?interval=1d&range=1y"
+        else:
+            ticker = symbol.replace(".HK", "").zfill(4)
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{ticker}.HK?interval=1d&range=1y"
         headers = {"User-Agent": "Mozilla/5.0"}
         r = requests.get(url, headers=headers, timeout=10)
         data = r.json()
@@ -81,8 +83,10 @@ def send_telegram(msg):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
         print("Telegram not configured, skipping.")
         return
+    print(f"Sending Telegram to chat_id: {TELEGRAM_CHAT_ID[:5]}...")
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "HTML"})
+    resp = requests.post(url, json={"chat_id": TELEGRAM_CHAT_ID, "text": msg, "parse_mode": "HTML"})
+    print(f"Telegram response: {resp.status_code} - {resp.text[:100]}")
 
 # ── 主程式 ────────────────────────────────────────
 def main():
@@ -95,9 +99,11 @@ def main():
     for sym in WATCHLIST:
         s = get_stock_data(sym)
         if not s:
+            print(f"{sym}: failed to fetch")
             continue
         score = score_stock(s, market)
-        if score >= 6:
+        print(f"{sym}: price={s['price']} ma20={s['ma20']} ma60={s['ma60']} ma200={s['ma200']} chg={s['change_pct']}% score={score}")
+        if score >= 4:
             signals.append({
                 "symbol": s["symbol"],
                 "price": s["price"],
@@ -106,9 +112,8 @@ def main():
                 "ma60": s["ma60"],
                 "ma200": s["ma200"],
                 "score": score,
-                "signal": "BUY" if score >= 7 else "WATCH"
+                "signal": "BUY" if score >= 6 else "WATCH"
             })
-        print(f"{sym}: score={score}")
 
     signals.sort(key=lambda x: x["score"], reverse=True)
 
@@ -133,6 +138,9 @@ def main():
             emoji = "🟢" if s["signal"] == "BUY" else "🟡"
             msg += f"{emoji} <b>{s['symbol']}</b> HK${s['price']} ({s['change_pct']:+.1f}%) 評分:{s['score']}\n"
         send_telegram(msg)
+    else:
+        print("No signals found, sending debug message to Telegram...")
+        send_telegram("🔍 港股掃描完成，今日無符合條件信號。")
 
 if __name__ == "__main__":
     main()
