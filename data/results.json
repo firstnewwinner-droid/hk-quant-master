@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-04-07 06:54 UTC",
+  "last_updated": "2026-04-07 12:07 UTC",
   "market_status": "BEAR",
   "hsi_price": 25116.53,
   "hsi_ma200": 25743.51,
@@ -165,16 +165,6 @@
       "signal": "BUY"
     },
     {
-      "symbol": "2269.HK",
-      "price": 34.98,
-      "change_pct": 0.34,
-      "ma20": 34.25,
-      "ma60": 37.03,
-      "ma200": 34.03,
-      "score": 6,
-      "signal": "BUY"
-    },
-    {
       "symbol": "2382.HK",
       "price": 59.9,
       "change_pct": 5.18,
@@ -275,5 +265,5 @@
       "signal": "WATCH"
     }
   ],
-  "total": 27
+  "total": 26
 }
