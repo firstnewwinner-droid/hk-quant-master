@@ -1,24 +1,24 @@
 {
-  "last_updated": "2026-09-17 06:52 UTC",
+  "last_updated": "2026-09-17 14:31 UTC",
   "market_status": "BEAR",
-  "hsi_price": 24567.86,
-  "hsi_ma200": 25607.29,
+  "hsi_price": 24604.29,
+  "hsi_ma200": 25607.47,
   "signals": [
     {
       "symbol": "2269.HK",
-      "price": 50.25,
-      "change_pct": 0.62,
-      "ma20": 49.54,
-      "ma60": 43.21,
+      "price": 50.1,
+      "change_pct": 0.32,
+      "ma20": 49.53,
+      "ma60": 43.2,
       "ma200": 37.27,
       "score": 8,
       "signal": "BUY"
     },
     {
       "symbol": "2388.HK",
-      "price": 51.8,
-      "change_pct": 0.88,
-      "ma20": 51.67,
+      "price": 51.95,
+      "change_pct": 1.17,
+      "ma20": 51.68,
       "ma60": 49.32,
       "ma200": 44.63,
       "score": 8,
@@ -26,8 +26,8 @@
     },
     {
       "symbol": "3328.HK",
-      "price": 8.15,
-      "change_pct": 0.37,
+      "price": 8.18,
+      "change_pct": 0.68,
       "ma20": 7.85,
       "ma60": 7.38,
       "ma200": 7.1,
@@ -37,7 +37,7 @@
     {
       "symbol": "3988.HK",
       "price": 5.99,
-      "change_pct": 0.08,
+      "change_pct": 0.17,
       "ma20": 5.84,
       "ma60": 5.41,
       "ma200": 5.0,
@@ -46,8 +46,8 @@
     },
     {
       "symbol": "2382.HK",
-      "price": 67.6,
-      "change_pct": -1.31,
+      "price": 67.5,
+      "change_pct": -1.46,
       "ma20": 67.31,
       "ma60": 61.21,
       "ma200": 63.53,
@@ -56,18 +56,18 @@
     },
     {
       "symbol": "1038.HK",
-      "price": 64.4,
-      "change_pct": 0.47,
-      "ma20": 65.43,
-      "ma60": 62.91,
+      "price": 64.65,
+      "change_pct": 0.86,
+      "ma20": 65.44,
+      "ma60": 62.92,
       "ma200": 62.02,
       "score": 6,
       "signal": "BUY"
     },
     {
       "symbol": "1093.HK",
-      "price": 8.88,
-      "change_pct": 0.85,
+      "price": 8.85,
+      "change_pct": 0.51,
       "ma20": 9.23,
       "ma60": 8.59,
       "ma200": 8.62,
@@ -75,19 +75,29 @@
       "signal": "BUY"
     },
     {
+      "symbol": "0005.HK",
+      "price": 159.8,
+      "change_pct": -0.68,
+      "ma20": 162.93,
+      "ma60": 159.72,
+      "ma200": 140.72,
+      "score": 5,
+      "signal": "WATCH"
+    },
+    {
       "symbol": "1299.HK",
-      "price": 77.2,
-      "change_pct": 0.26,
-      "ma20": 75.92,
-      "ma60": 75.1,
+      "price": 77.35,
+      "change_pct": 0.45,
+      "ma20": 75.93,
+      "ma60": 75.11,
       "ma200": 80.66,
       "score": 5,
       "signal": "WATCH"
     },
     {
       "symbol": "0267.HK",
-      "price": 12.84,
-      "change_pct": -0.7,
+      "price": 12.87,
+      "change_pct": -0.46,
       "ma20": 13.27,
       "ma60": 12.21,
       "ma200": 12.37,
@@ -96,9 +106,9 @@
     },
     {
       "symbol": "1088.HK",
-      "price": 44.8,
-      "change_pct": -0.97,
-      "ma20": 45.59,
+      "price": 44.72,
+      "change_pct": -1.15,
+      "ma20": 45.58,
       "ma60": 43.5,
       "ma200": 43.66,
       "score": 5,
@@ -106,14 +116,24 @@
     },
     {
       "symbol": "1398.HK",
-      "price": 7.49,
-      "change_pct": -0.53,
+      "price": 7.52,
+      "change_pct": -0.2,
       "ma20": 7.55,
       "ma60": 7.2,
       "ma200": 6.77,
       "score": 5,
       "signal": "WATCH"
+    },
+    {
+      "symbol": "0001.HK",
+      "price": 67.55,
+      "change_pct": 0.07,
+      "ma20": 69.41,
+      "ma60": 69.94,
+      "ma200": 64.82,
+      "score": 4,
+      "signal": "WATCH"
     }
   ],
-  "total": 11
+  "total": 13
 }
