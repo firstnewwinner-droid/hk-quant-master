@@ -1,14 +1,14 @@
 {
-  "last_updated": "2026-10-22 06:47 UTC",
+  "last_updated": "2026-10-22 14:44 UTC",
   "market_status": "BEAR",
-  "hsi_price": 22921.62,
-  "hsi_ma200": 25439.82,
+  "hsi_price": 22934.68,
+  "hsi_ma200": 25439.89,
   "signals": [
     {
       "symbol": "1038.HK",
-      "price": 67.55,
-      "change_pct": -0.07,
-      "ma20": 66.19,
+      "price": 67.3,
+      "change_pct": -0.44,
+      "ma20": 66.18,
       "ma60": 64.92,
       "ma200": 63.32,
       "score": 7,
@@ -16,8 +16,8 @@
     },
     {
       "symbol": "3328.HK",
-      "price": 8.36,
-      "change_pct": -1.24,
+      "price": 8.32,
+      "change_pct": -1.77,
       "ma20": 8.37,
       "ma60": 7.91,
       "ma200": 7.27,
@@ -26,8 +26,8 @@
     },
     {
       "symbol": "3988.HK",
-      "price": 5.97,
-      "change_pct": -2.13,
+      "price": 5.99,
+      "change_pct": -1.8,
       "ma20": 6.07,
       "ma60": 5.79,
       "ma200": 5.18,
